@@ -1,0 +1,28 @@
+i{
+    font-size: 24px;
+    color: #1F2937
+    ;
+
+}
+
+.bg-green{
+    background-image: linear-gradient(to right,  #D1FAE5,#DDD6FE);
+}
+
+.navbar-texto{
+    color: #1F2937;
+    font-size: 28px
+}
+
+.texto-selector{
+    font-size: 30px;
+}
+
+.bg-tablehead{
+    background-color: #064E3B;
+}
+
+footer{
+    position: absolute;
+    bottom: 0;
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Pablo 'hariq' Lizama">
+    <title>Feriados de Chile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    <script
+    src="https://code.jquery.com/jquery-3.6.0.js"
+    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous">
+    </script>
+</head>
+<body>
+
+<nav class="navbar bg-green">
+    <div class="container">
+    <span class="navbar-brand mb-0 h1 navbar-texto">Feriados de Chile <i class="far fa-calendar-check"></i></span>
+</div>
+</nav>
+
+<div class="container texto-selector text-center py-3">
+    <h2 class="texto-selector d-inline">Ver feriados para: </h2> 
+    <select name="mes" id="selectorMes">
+        <option value="0">(Seleccione mes)</option>
+    </select>
+    
+
+</div>
+<div class="container col-10">
+<table class="table">
+    <thead class="thead-dark bg-tablehead">
+      <tr>
+        <th scope="col">Fecha</th>
+        <th scope="col">Título del feriado</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Leyes de Origen</th>
+
+      </tr>
+    </thead>
+    <tbody id="cuerpoTabla"> </tbody>
+  </table>
+  
+</div>
+
+<section>
+<footer class="container">Por Pablo Lizama, 2021</footer>
+</section>
+</body>
+
+<script>
+    //escribir de manera dinámica el selector de meses en el HTML
+    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+    const selectorMes = $('#selectorMes')
+    meses.forEach((mes,i)=>{
+        selectorMes.append(`<option value="${i+1}">${mes}</option>`)
+    })
+    jQuery.fn.buscarFeriados = function(){
+        this.each(function(){
+            const tbody = this
+            tbody.innerHTML = ""
+            $.ajax({
+                url: 'https://www.feriadosapp.com/api/holidays.json',
+                type: 'GET',
+                dataType: 'json',
+                success: function({data:feriados}){
+                    //agrega en forma de tabla los datos, usaremos esta funcionalidad seleccionando cuerpos de tablas
+                    feriados.forEach(function(feriado){
+                        let {date: fecha, title: titulo, extra: tipo} = feriado
+                        let leyes = feriado.law.join(", ")                    //agregamos con estructura de tabla html SI PASA EL FILTRO DE MES
+                        mesFeriado = parseInt(fecha.split("-")[1]) //separa el 2do elemento del formato aaaa-mm-dd y lo pasa a numero para no tener problemas con "1" vs "01"
+                        mesSeleccionado = parseInt($('select option:selected').attr('value'))
+                        // console.log(mesSeleccionado,mesFeriado,typeof(mesSeleccionado),typeof(mesFeriado));
+                        if (mesFeriado == mesSeleccionado){
+                        tbody.innerHTML +=`
+                        <tr>
+                            <td>${fecha}</td>
+                            <td>${titulo}</td>
+                            <td>${tipo}</td>
+                            <td>${leyes}</td>
+                            </tr>`
+                        }
+                    })  
+                },
+                error: function(error){console.log(error)}
+            })
+            
+        })
+        return this
+    }
+    $("#selectorMes").change(function(){ //se activa al cambiar la opción en un elemento select
+        $("#cuerpoTabla").buscarFeriados();
+    })
+</script>
+</html>
